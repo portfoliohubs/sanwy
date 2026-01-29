@@ -1,7 +1,6 @@
-baseURL = 'https://portfoliohubs.github.io/sanwy'
+baseURL = 'https://[username].github.io/[repository]'
 languageCode = 'ar'
 title = 'دليل السعادة التفاعلي: إزاي أفرح؟'
-theme = ''
 
 [params]
   description = 'دليل تفاعلي للساعة والفرح من خلال أربعة محاور رئيسية'

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل السعادة التفاعلي: إزاي أفرح؟</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Placeholder Comments -->
+    <!-- Chosen Palette: Warm Neutrals & Serene Earth Tones. Background: Warm White (#FDFBF7). Accents: Gold (#D69E2E) for Spirituality, Sage Green (#48BB78) for Growth, Calm Blue (#4299E1) for Social, Terracotta (#ED8936) for Action. -->
+    
+    <!-- Application Structure Plan: A "Journey" based SPA. Top navigation tabs allow switching between the 4 main axes (God, Self, Others, Life) + a Summary Dashboard. 
+         Why: The report is a structured guide. A tabbed interface prevents information overload, allowing the user to focus on one relationship at a time. 
+         Interactive elements (Cake Mixer, Expectation Simulator, Goal Ladder) replace static metaphors to deepen understanding through doing. -->
+    
+    <!-- Visualization & Content Choices:
+         1. "God": Cake Analogy -> Interactive Ingredient Mixer (JS). Goal: Show how individual "bad" parts make a "good" whole.
+         2. "God": Gears of Good -> Canvas Animation. Goal: Visualizing "All things work together".
+         3. "Self": Decluttering -> Click-to-remove Interaction. Goal: Active participation in "forgetting the past".
+         4. "Others": Expectation Chart -> Chart.js Line Chart with Slider. Goal: Visually demonstrate the inverse relationship between expectations and peace.
+         5. "Life": Goal Steps -> Interactive Vertical Stepper. Goal: Demonstrate the "Gradual" nature of success.
+         6. "Summary": Happiness Audit -> Interactive Radar Chart (Chart.js). Goal: Self-reflection tool.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #FDFBF7;
+            color: #2D3748;
+        }
+        h1, h2, h3, .amiri-font {
+            font-family: 'Amiri', serif;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-item.active {
+            border-bottom: 3px solid #D69E2E;
+            color: #D69E2E;
+            font-weight: bold;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        /* Ingredient Item Animation */
+        .ingredient {
+            transition: all 0.3s ease;
+        }
+        .ingredient.added {
+            transform: scale(0.8);
+            opacity: 0.5;
+            background-color: #CBD5E0;
+        }
+        /* Declutter Animation */
+        .clutter-item {
+            transition: all 0.5s ease;
+        }
+        .clutter-item.removed {
+            transform: scale(0);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-sun text-yellow-500 text-3xl"></i>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">إزاي أفرح؟</h1>
+                    <p class="text-xs text-gray-500">دليل السعادة الشامل</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-6 text-lg">
+                <button onclick="switchTab('intro')" class="nav-item active px-2 py-1 hover:text-yellow-600 transition" id="nav-intro">المقدمة</button>
+                <button onclick="switchTab('god')" class="nav-item px-2 py-1 hover:text-yellow-600 transition" id="nav-god">مع الله</button>
+                <button onclick="switchTab('self')" class="nav-item px-2 py-1 hover:text-yellow-600 transition" id="nav-self">مع النفس</button>
+                <button onclick="switchTab('others')" class="nav-item px-2 py-1 hover:text-yellow-600 transition" id="nav-others">مع الآخرين</button>
+                <button onclick="switchTab('life')" class="nav-item px-2 py-1 hover:text-yellow-600 transition" id="nav-life">مع الحياة</button>
+                <button onclick="switchTab('summary')" class="nav-item px-2 py-1 hover:text-yellow-600 transition" id="nav-summary">الملخص</button>
+            </nav>
+            <button class="md:hidden text-gray-700 text-2xl" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4 flex flex-col gap-3">
+            <button onclick="switchTab('intro')" class="text-right py-2 border-b">المقدمة</button>
+            <button onclick="switchTab('god')" class="text-right py-2 border-b">مع الله</button>
+            <button onclick="switchTab('self')" class="text-right py-2 border-b">مع النفس</button>
+            <button onclick="switchTab('others')" class="text-right py-2 border-b">مع الآخرين</button>
+            <button onclick="switchTab('life')" class="text-right py-2 border-b">مع الحياة</button>
+            <button onclick="switchTab('summary')" class="text-right py-2">الملخص والتقييم</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- TAB: INTRO -->
+        <section id="intro" class="tab-content active">
+            <div class="max-w-4xl mx-auto text-center space-y-8">
+                <div class="bg-gradient-to-b from-blue-50 to-orange-50 rounded-3xl p-10 shadow-lg border border-orange-100">
+                    <i class="fas fa-mountain text-6xl text-gray-700 mb-6 block"></i>
+                    <h2 class="text-5xl font-bold text-gray-800 mb-6 amiri-font">رحلة البحث عن الفرح</h2>
+                    <p class="text-xl text-gray-600 leading-relaxed mb-8">
+                        السعادة ليست وجهة نصل إليها صدفة، بل هي قرار يومي ومصالحة شاملة مع أربعة جوانب رئيسية في حياتنا.
+                        هذا التطبيق هو دليلك العملي لتبني عادات الفرح الحقيقي.
+                    </p>
+                    <button onclick="switchTab('god')" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105">
+                        ابدأ الرحلة <i class="fas fa-arrow-left mr-2"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                    <div class="p-6 bg-white rounded-xl shadow-md border-t-4 border-yellow-500">
+                        <i class="fas fa-praying-hands text-3xl text-yellow-500 mb-3"></i>
+                        <h3 class="text-xl font-bold mb-2">مع الله</h3>
+                        <p class="text-sm text-gray-500">مفتاح الشكر والرضا بالصورة الكاملة.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-md border-t-4 border-teal-500">
+                        <i class="fas fa-user-check text-3xl text-teal-500 mb-3"></i>
+                        <h3 class="text-xl font-bold mb-2">مع النفس</h3>
+                        <p class="text-sm text-gray-500">قبول الذات والتخلص من الكراكيب.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-md border-t-4 border-blue-500">
+                        <i class="fas fa-users text-3xl text-blue-500 mb-3"></i>
+                        <h3 class="text-xl font-bold mb-2">مع الآخرين</h3>
+                        <p class="text-sm text-gray-500">العطاء بلا انتظار وتقليل التوقعات.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-md border-t-4 border-orange-500">
+                        <i class="fas fa-compass text-3xl text-orange-500 mb-3"></i>
+                        <h3 class="text-xl font-bold mb-2">مع الحياة</h3>
+                        <p class="text-sm text-gray-500">تحديد الأهداف والسعي المتدرج.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: GOD -->
+        <section id="god" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8 p-6 bg-yellow-50 border-r-4 border-yellow-500 rounded-lg">
+                    <h2 class="text-3xl font-bold text-yellow-800 mb-2">المحور الأول: الاصطلاح مع الله</h2>
+                    <p class="text-lg text-yellow-900">الأساس هو الشكر، والإيمان بأن الله يدبر "الصورة الكاملة" للخير، حتى لو بدت التفاصيل الصغيرة مؤلمة.</p>
+                </div>
+
+                <!-- Concept 1: Gratitude -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-key text-yellow-500 ml-2"></i> مفتاح الصلح</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            مفتاح الصلح مع الله هو <strong>الشكر</strong>. الكنيسة كانت ذكية حين بدأت صلواتها بـ "صلاة الشكر". ابدأ يومك دائماً بالامتنان للنعم الموجودة قبل طلب المفقود.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-film text-yellow-500 ml-2"></i> لا تحكم مبكراً</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            الله ينظر لحياتك كصورة كاملة (نظام الجملة) وليس أحداث متفرقة (نظام القطاعي). لا تحكم على الفيلم من مشهد واحد حزين؛ النهاية لم تكتب بعد.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Concept 2: Cake Analogy (Interactive) -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg mb-12">
+                    <h3 class="text-2xl font-bold text-center mb-6">تجربة تفاعلية: نظرية الكيكة</h3>
+                    <p class="text-center text-gray-600 mb-8">
+                        هل يمكن أكل الدقيق وحده؟ أو البيكربونات المرة؟ جرب بنفسك لترى كيف تعمل الأشياء معاً للخير.
+                    </p>
+                    
+                    <div class="flex flex-wrap justify-center gap-6 mb-8">
+                        <div id="ing-1" class="ingredient cursor-pointer bg-gray-100 p-4 rounded-xl w-32 text-center hover:shadow-md border border-gray-200" onclick="addIngredient('ing-1')">
+                            <i class="fas fa-egg text-3xl text-yellow-400 mb-2"></i>
+                            <p class="font-bold">بيض (نيء)</p>
+                            <span class="text-xs text-red-400">غير مستساغ</span>
+                        </div>
+                        <div id="ing-2" class="ingredient cursor-pointer bg-gray-100 p-4 rounded-xl w-32 text-center hover:shadow-md border border-gray-200" onclick="addIngredient('ing-2')">
+                            <i class="fas fa-cloud text-3xl text-gray-400 mb-2"></i>
+                            <p class="font-bold">دقيق (جاف)</p>
+                            <span class="text-xs text-red-400">يخنق</span>
+                        </div>
+                        <div id="ing-3" class="ingredient cursor-pointer bg-gray-100 p-4 rounded-xl w-32 text-center hover:shadow-md border border-gray-200" onclick="addIngredient('ing-3')">
+                            <i class="fas fa-flask text-3xl text-blue-300 mb-2"></i>
+                            <p class="font-bold">بيكنج باودر</p>
+                            <span class="text-xs text-red-400">مر جداً</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button id="bake-btn" onclick="bakeCake()" class="bg-gray-300 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed transition" disabled>
+                            اخلط المكونات واخبز <i class="fas fa-fire ml-2"></i>
+                        </button>
+                    </div>
+
+                    <div id="cake-result" class="hidden mt-8 text-center bg-yellow-50 p-6 rounded-xl border border-yellow-200 animate-pulse">
+                        <i class="fas fa-birthday-cake text-6xl text-pink-500 mb-4"></i>
+                        <h4 class="text-2xl font-bold text-gray-800">النتيجة: كيكة رائعة!</h4>
+                        <p class="text-gray-700 mt-2">
+                            "كل الأشياء تعمل معاً للخير". المكونات المرة والصعبة صنعت معاً شيئاً جميلاً.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Concept 3: Gears Canvas -->
+                <div class="bg-gray-900 text-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
+                    <h3 class="text-2xl font-bold mb-4 relative z-10">تناغم الكون</h3>
+                    <p class="text-gray-300 mb-4 relative z-10 max-w-lg">
+                        حتى لو لم تفهم سبب دوران ترس معين في حياتك الآن، تأكد أنه جزء من ماكينة ضخمة تدور لخيرك.
+                    </p>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="gearsCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: SELF -->
+        <section id="self" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8 p-6 bg-teal-50 border-r-4 border-teal-500 rounded-lg">
+                    <h2 class="text-3xl font-bold text-teal-800 mb-2">المحور الثاني: الاصطلاح مع النفس</h2>
+                    <p class="text-lg text-teal-900">كن صديقاً لنفسك. تخلص من أثقال الماضي، اقبل ما لا يتغير، وغير ما تستطيع.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Interaction: Declutter -->
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-t-8 border-teal-400">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-trash-alt text-teal-500 ml-3"></i> تنظيف "الكراكيب" النفسية
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-6">اضغط على الأفكار السلبية للتخلص منها وتحرير مساحة للفرح.</p>
+                        
+                        <div class="space-y-3" id="clutter-list">
+                            <div class="clutter-item cursor-pointer bg-red-50 p-3 rounded border border-red-100 flex justify-between items-center hover:bg-red-100" onclick="removeClutter(this)">
+                                <span>أخطاء الماضي القديمة</span>
+                                <i class="fas fa-times text-red-400"></i>
+                            </div>
+                            <div class="clutter-item cursor-pointer bg-red-50 p-3 rounded border border-red-100 flex justify-between items-center hover:bg-red-100" onclick="removeClutter(this)">
+                                <span>مقارنة نفسي بالآخرين</span>
+                                <i class="fas fa-times text-red-400"></i>
+                            </div>
+                            <div class="clutter-item cursor-pointer bg-red-50 p-3 rounded border border-red-100 flex justify-between items-center hover:bg-red-100" onclick="removeClutter(this)">
+                                <span>جلد الذات المستمر</span>
+                                <i class="fas fa-times text-red-400"></i>
+                            </div>
+                            <div class="clutter-item cursor-pointer bg-red-50 p-3 rounded border border-red-100 flex justify-between items-center hover:bg-red-100" onclick="removeClutter(this)">
+                                <span>الندم على ما فات</span>
+                                <i class="fas fa-times text-red-400"></i>
+                            </div>
+                        </div>
+                        <div id="clean-message" class="hidden mt-6 text-center text-teal-600 font-bold">
+                            <i class="fas fa-check-circle text-2xl mb-2"></i><br>
+                            نفسيتك الآن أنقى وأخف!
+                        </div>
+                    </div>
+
+                    <!-- Interaction: Acceptance vs Change -->
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-t-8 border-purple-400">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-balance-scale text-purple-500 ml-3"></i> معادلة التغيير
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-bold text-gray-700 mb-2">عيوب لا أستطيع تغييرها (مثل الشكل، العائلة)</h4>
+                                <div class="flex items-center gap-4">
+                                    <button onclick="toggleAcceptance('reject')" class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 focus:ring ring-purple-300">رفض</button>
+                                    <button onclick="toggleAcceptance('accept')" class="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 focus:ring ring-purple-300">قبول</button>
+                                </div>
+                                <p id="accept-feedback" class="mt-2 text-sm text-gray-500 h-10">اختر رد فعلك...</p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-bold text-gray-700 mb-2">عيوب أستطيع تغييرها (العصبية، الكسل)</h4>
+                                <div class="w-full bg-gray-200 rounded-full h-4 mb-2 cursor-pointer relative" onclick="moveProgress(event)">
+                                    <div id="change-progress" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 10%"></div>
+                                </div>
+                                <p class="text-xs text-gray-500">اضغط على الشريط للتقدم. استثمر في ميزاتك!</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200 text-sm text-yellow-800">
+                            <strong>نصيحة:</strong> لا يجب أن تكون متميزاً في كل شيء. ركز على نقاط قوتك واستثمرها.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: OTHERS -->
+        <section id="others" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8 p-6 bg-blue-50 border-r-4 border-blue-500 rounded-lg">
+                    <h2 class="text-3xl font-bold text-blue-800 mb-2">المحور الثالث: الاصطلاح مع الآخرين</h2>
+                    <p class="text-lg text-blue-900">توقف عن المقارنة، قلل التوقعات، وشارك الناس مشاعرهم بصدق.</p>
+                </div>
+
+                <!-- Interactive Chart: Expectations vs Happiness -->
+                <div class="bg-white p-6 rounded-2xl shadow-md mb-8">
+                    <h3 class="text-xl font-bold mb-4 text-center">علاقة التوقعات براحة البال</h3>
+                    <p class="text-center text-gray-600 mb-6 text-sm">حرك المؤشر لترى كيف يؤثر سقف توقعاتك في الناس على سعادتك.</p>
+                    
+                    <div class="mb-6 px-10">
+                        <label for="expectationSlider" class="block text-sm font-medium text-gray-700 mb-2">مستوى توقعاتك من الناس</label>
+                        <input type="range" min="0" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" id="expectationSlider">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>لا أتوقع شيئاً (عطاء لله)</span>
+                            <span>أتوقع الكثير (مقابل)</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-center mb-6">
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <div class="text-sm text-gray-500">مستوى التوقعات</div>
+                            <div id="exp-val" class="text-2xl font-bold text-blue-600">80%</div>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-lg">
+                            <div class="text-sm text-gray-500">مستوى راحة البال</div>
+                            <div id="peace-val" class="text-2xl font-bold text-green-600">20%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="expectationsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Comparison Killer -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-indigo-500">
+                        <h3 class="text-xl font-bold mb-3">حقيقة المقارنة</h3>
+                        <ul class="list-disc list-inside space-y-3 text-gray-700">
+                            <li>كل واحد خلقه الله بميزة مختلفة (بصمة).</li>
+                            <li>"القمة تتسع للكثيرين" - نجاح غيرك لا يعني فشلك.</li>
+                            <li>لا تنتظر رد الفعل، اجعل أجرك عند الله.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-md border-l-4 border-pink-500">
+                        <h3 class="text-xl font-bold mb-3">المشاركة الوجدانية</h3>
+                        <div class="flex items-center justify-center gap-8 h-32">
+                            <div class="text-center">
+                                <i class="fas fa-laugh-beam text-4xl text-yellow-500 mb-2"></i>
+                                <p class="text-sm">فرحاً مع الفرحين</p>
+                            </div>
+                            <div class="w-px h-16 bg-gray-300"></div>
+                            <div class="text-center">
+                                <i class="fas fa-sad-tear text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-sm">بكاءً مع الباكين</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: LIFE -->
+        <section id="life" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8 p-6 bg-orange-50 border-r-4 border-orange-500 rounded-lg">
+                    <h2 class="text-3xl font-bold text-orange-800 mb-2">المحور الرابع: الاصطلاح مع الحياة</h2>
+                    <p class="text-lg text-orange-900">بدون هدف، أنت تخطط للفشل. ضع هدفاً متدرجاً وافرح بكل خطوة.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-8">سلم النجاح المتدرج</h3>
+                    <p class="text-center text-gray-600 mb-8">شروط الهدف الناجح: متدرج، مرحلي، ومقسم. اضغط على الدرجات للصعود.</p>
+
+                    <div class="relative max-w-lg mx-auto min-h-[400px] flex flex-col justify-end">
+                        <!-- Goal Steps -->
+                        <div id="step-4" class="w-full p-4 bg-gray-100 rounded-lg mb-4 text-center cursor-not-allowed opacity-50 transition-all duration-500 border-2 border-transparent">
+                            <i class="fas fa-trophy text-2xl text-yellow-500 mb-1"></i>
+                            <h4 class="font-bold">الهدف النهائي</h4>
+                            <p class="text-xs">تحقيق الحلم الكبير</p>
+                        </div>
+                        <div id="step-3" class="w-3/4 mx-auto p-4 bg-gray-100 rounded-lg mb-4 text-center cursor-not-allowed opacity-50 transition-all duration-500 border-2 border-transparent" onclick="takeStep(3)">
+                            <h4 class="font-bold">المرحلة الثالثة</h4>
+                            <p class="text-xs">تطوير ونتائج ملموسة</p>
+                        </div>
+                        <div id="step-2" class="w-2/3 mx-auto p-4 bg-gray-100 rounded-lg mb-4 text-center cursor-not-allowed opacity-50 transition-all duration-500 border-2 border-transparent" onclick="takeStep(2)">
+                            <h4 class="font-bold">المرحلة الثانية</h4>
+                            <p class="text-xs">الاستمرار وبناء العادة</p>
+                        </div>
+                        <div id="step-1" class="w-1/2 mx-auto p-4 bg-orange-100 border-2 border-orange-500 rounded-lg mb-4 text-center cursor-pointer hover:bg-orange-200 transition-all duration-500 shadow-lg" onclick="takeStep(1)">
+                            <i class="fas fa-walking text-orange-600 mb-1"></i>
+                            <h4 class="font-bold text-orange-800">المرحلة الأولى</h4>
+                            <p class="text-xs text-orange-700">بداية صغيرة وبسيطة</p>
+                        </div>
+                    </div>
+                    
+                    <div id="success-msg" class="hidden text-center mt-6 text-green-600 font-bold text-xl animate-bounce">
+                        النجاح يولد نجاحاً! استمر!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: SUMMARY -->
+        <section id="summary" class="tab-content">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6">روشتة السعادة الختامية</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-center">
+                    <div class="text-right space-y-4">
+                        <div class="p-4 bg-white rounded-lg shadow border-r-4 border-yellow-500">
+                            <strong class="block text-lg text-yellow-700">مع الله:</strong>
+                            <span>بطل تذمر واتعلم فن الشكر.</span>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow border-r-4 border-teal-500">
+                            <strong class="block text-lg text-teal-700">مع النفس:</strong>
+                            <span>اقبل عيوبك واستثمر في مميزاتك.</span>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow border-r-4 border-blue-500">
+                            <strong class="block text-lg text-blue-700">مع الآخرين:</strong>
+                            <span>الغِ المقارنات ولا تنتظر رد الفعل.</span>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow border-r-4 border-orange-500">
+                            <strong class="block text-lg text-orange-700">مع الحياة:</strong>
+                            <span>حط هدف وقسمه لمراحل.</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-gray-700">عجلة سعادتي</h3>
+                        <p class="text-sm text-gray-500 mb-4">أين أنت الآن؟ (تفاعلي)</p>
+                        <div class="chart-container">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+                           <button onclick="updateRadar('god')" class="bg-yellow-100 hover:bg-yellow-200 p-2 rounded">زد رصيد الشكر</button>
+                           <button onclick="updateRadar('self')" class="bg-teal-100 hover:bg-teal-200 p-2 rounded">زد رصيد قبول الذات</button>
+                           <button onclick="updateRadar('others')" class="bg-blue-100 hover:bg-blue-200 p-2 rounded">زد رصيد العطاء</button>
+                           <button onclick="updateRadar('life')" class="bg-orange-100 hover:bg-orange-200 p-2 rounded">زد رصيد الأهداف</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 text-center mt-12">
+        <p class="amiri-font text-lg">"القمة تتسع للكثيرين.. ابدأ رحلتك اليوم"</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update Nav styles
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            const navBtn = document.getElementById('nav-' + tabId);
+            if(navBtn) navBtn.classList.add('active');
+
+            // Mobile menu close
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+            // Re-render charts if hidden
+            if (tabId === 'others' && expectationsChart) expectationsChart.resize();
+            if (tabId === 'summary' && radarChart) radarChart.resize();
+            if (tabId === 'god') startGearsAnimation();
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // --- Section 1: Cake Analogy ---
+        let ingredientsAdded = 0;
+        function addIngredient(id) {
+            const el = document.getElementById(id);
+            if (!el.classList.contains('added')) {
+                el.classList.add('added');
+                ingredientsAdded++;
+                if (ingredientsAdded === 3) {
+                    const btn = document.getElementById('bake-btn');
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+                    btn.classList.add('bg-pink-500', 'hover:bg-pink-600', 'shadow-lg');
+                }
+            }
+        }
+
+        function bakeCake() {
+            document.getElementById('bake-btn').classList.add('hidden');
+            document.getElementById('cake-result').classList.remove('hidden');
+        }
+
+        // --- Section 1: Gears Canvas Animation ---
+        const canvas = document.getElementById('gearsCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let angle = 0;
+        function drawGear(x, y, radius, teeth, color, speed, direction) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle * speed * direction);
+            ctx.fillStyle = color;
+            
+            // Draw teeth
+            for (let i = 0; i < teeth; i++) {
+                ctx.save();
+                ctx.rotate((Math.PI * 2 / teeth) * i);
+                ctx.fillRect(-5, -radius - 5, 10, 10);
+                ctx.restore();
+            }
+            
+            // Draw body
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw hole
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function animateGears() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            angle += 0.02;
+            
+            // Gear 1 (God/Plan)
+            drawGear(canvas.width * 0.3, canvas.height * 0.5, 40, 12, '#D69E2E', 1, 1);
+            // Gear 2 (Life Events)
+            drawGear(canvas.width * 0.3 + 75, canvas.height * 0.5, 30, 8, '#4A5568', 1.33, -1);
+            // Gear 3 (My Heart)
+            drawGear(canvas.width * 0.3 + 140, canvas.height * 0.5 - 20, 20, 6, '#E53E3E', 2, 1);
+            
+            animationFrameId = requestAnimationFrame(animateGears);
+        }
+
+        function startGearsAnimation() {
+            resizeCanvas();
+            if (!animationFrameId) animateGears();
+        }
+
+        // --- Section 2: Self Interactions ---
+        function removeClutter(el) {
+            el.classList.add('removed');
+            setTimeout(() => {
+                el.style.display = 'none';
+                const remaining = document.querySelectorAll('.clutter-item:not(.removed)');
+                if (remaining.length === 0) {
+                    document.getElementById('clean-message').classList.remove('hidden');
+                }
+            }, 500);
+        }
+
+        function toggleAcceptance(action) {
+            const feedback = document.getElementById('accept-feedback');
+            if (action === 'accept') {
+                feedback.innerHTML = '<span class="text-green-600 font-bold"><i class="fas fa-heart"></i> سلام نفسي! لقد قبلت ما لا يتغير.</span>';
+            } else {
+                feedback.innerHTML = '<span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> مقاومة الواقع تزيد الألم.</span>';
+            }
+        }
+
+        function moveProgress(e) {
+            const bar = document.getElementById('change-progress');
+            const rect = e.currentTarget.getBoundingClientRect();
+            const width = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+            bar.style.width = width + '%';
+        }
+
+        // --- Section 3: Chart.js Expectations ---
+        let expectationsChart;
+        function initExpChart() {
+            const ctxExp = document.getElementById('expectationsChart').getContext('2d');
+            
+            // Data generation
+            const labels = [];
+            const dataExp = [];
+            const dataPeace = [];
+            for(let i=0; i<=100; i+=10) {
+                labels.push(i + '%');
+                dataExp.push(i);
+                dataPeace.push(100 - i); // Inverse relationship
+            }
+
+            expectationsChart = new Chart(ctxExp, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'مستوى التوقعات',
+                            data: dataExp,
+                            borderColor: '#4299E1',
+                            backgroundColor: 'rgba(66, 153, 225, 0.1)',
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'راحة البال',
+                            data: dataPeace,
+                            borderColor: '#48BB78',
+                            backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                            yAxisID: 'y',
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // Slider Logic
+            const slider = document.getElementById('expectationSlider');
+            slider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                document.getElementById('exp-val').innerText = val + '%';
+                document.getElementById('peace-val').innerText = (100 - val) + '%';
+                
+                // Highlight point on chart? (Complex with Chart.js, just updating text is clearer)
+            });
+        }
+        
+        // --- Section 4: Life Stepper ---
+        let currentStep = 1;
+        function takeStep(stepNum) {
+            // Can only take the next immediate step
+            if (stepNum === currentStep) {
+                // Mark current as done
+                const currentEl = document.getElementById('step-' + stepNum);
+                currentEl.classList.remove('bg-orange-100', 'border-orange-500', 'shadow-lg');
+                currentEl.classList.add('bg-green-100', 'border-green-500');
+                currentEl.querySelector('i')?.classList.replace('fa-walking', 'fa-check');
+                currentEl.querySelector('h4').innerText += ' (تم)';
+                
+                // Unlock next
+                const nextStepNum = stepNum + 1;
+                const nextEl = document.getElementById('step-' + nextStepNum);
+                
+                if (nextEl) {
+                    nextEl.classList.remove('cursor-not-allowed', 'opacity-50', 'bg-gray-100');
+                    nextEl.classList.add('bg-orange-100', 'border-orange-500', 'cursor-pointer', 'shadow-lg', 'border-2');
+                    nextEl.setAttribute('onclick', `takeStep(${nextStepNum})`);
+                    currentStep = nextStepNum;
+                    
+                    // Specific message
+                    if(nextStepNum === 4) {
+                        document.getElementById('success-msg').classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        // --- Summary: Radar Chart ---
+        let radarChart;
+        const radarData = [5, 5, 5, 5]; // God, Self, Others, Life
+
+        function initRadarChart() {
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['مع الله (الشكر)', 'مع النفس (القبول)', 'مع الآخرين (العطاء)', 'مع الحياة (الأهداف)'],
+                    datasets: [{
+                        label: 'مستوى التوازن الحالي',
+                        data: radarData,
+                        fill: true,
+                        backgroundColor: 'rgba(214, 158, 46, 0.2)',
+                        borderColor: '#D69E2E',
+                        pointBackgroundColor: '#D69E2E',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#D69E2E'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRadar(axis) {
+            let index = 0;
+            if (axis === 'self') index = 1;
+            if (axis === 'others') index = 2;
+            if (axis === 'life') index = 3;
+            
+            if (radarData[index] < 10) {
+                radarData[index] += 1;
+                radarChart.update();
+            }
+        }
+
+        // --- Initialization ---
+        window.onload = function() {
+            initExpChart();
+            initRadarChart();
+            startGearsAnimation(); // Init canvas
+        };
+
+    </script>
+</body>
+</html>
